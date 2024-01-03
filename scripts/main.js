@@ -1176,12 +1176,12 @@ function processDrawing()
             {
                 var newTurn = true;
                 var symbolForTurn = "";
-                var userInputDirection = "right";
+                var direction = "right";
 
                 if(instructions[i] > 180)
                 {
                     instructions[i] = (360 - instructions[i]);
-                    userInputDirection = "left";
+                    direction = "left";
                 }
                 else if(instructions[i] < -180)
                 {
@@ -1190,7 +1190,7 @@ function processDrawing()
 
                 if(instructions[i] < 0)
                 {
-                    userInputDirection = "left";
+                    direction = "left";
                     instructions[i] = -1 * instructions[i];
                 }
 
