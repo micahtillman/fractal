@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<!&nbsp;&nbsp;[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]&nbsp;&nbsp;>
+<!&nbsp;&nbsp;[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]&nbsp;&nbsp;>
+<!&nbsp;&nbsp;[if IE 8]>         <html class="no-js lt-ie9"> <![endif]&nbsp;&nbsp;>
+<!&nbsp;&nbsp;[if gt IE 8]>      <html class="no-js"> <!&nbsp;&nbsp;<![endif]&nbsp;&nbsp;>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="icon" type="image/png" href="images/favicon.png" sizes="16x16">
+        <title>Fractalline</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="style.css">
+        <script src="scripts/phaser.min.js"></script>
+        <script src="scripts/main.js"></script>
+    </head>
+    <body>     
+        <div id="sidebar">
+            <a href="https://chambergon.com/fractal/"><img src="images/fractalline.png" class="headerImage" alt="A light blue image with the words 'Crystaline', 'Feline', 'Fractalline', 'Opaline', and 'Sibylline' written in a pixelated font. 'Fractalline' is written in rainbow-like colors, while the other words are solid black."/></a>
+            <div id="modeDiv" class="hasToolTip" style="display:inline-block">
+                <select id="mode">
+                    <option value="lindenmayer">Lindenmayer Mode</option>
+                    <option value="prime">Prime Numbers Mode</option>
+                </select>
+                <span class="toolTip"><p>&#x2022;Select "Lindenmayer" to see fractals found by others (or to make your own).</p>
+                    <p>&#x2022;Select "Prime Numbers" to explore how prime numbers turn the number line into intriguing shapes.</p>
+                </span>
+            </div>
+            <button id="controlsButton"><span class="buttonText">Controls</span></button>
+            <button id="infoButton"><span class="buttonText">Info</span></button>
+            <button id="faqButton"><span class="buttonText">FAQ</span></button>
+            <span id="toolTipsCheckboxSpan">
+                <label>Tooltips?</label>
+                <input type="checkbox" id="toolTipsCheckbox" checked>
+            </span>
+            <div id="lindenmayer" style="display: none">
+                <div class="hasToolTip"><select id="presetSelect"></select>
+                    <span class="toolTip">&#x2022;There are over 200 fractals to choose from. If you want to see any of them, pick a category from this list. Then, select a specific fractal from that category.</span>
+                </div>
+                <div class="metaStuff">
+                    <div id="seedDiv" class="hasToolTip">
+                        <label for="seed">...or start a string:</label>
+                        <input type="text" id="seed">
+                        <span class="toolTip">
+                            <p>
+                                &#x2022;If you don't want to see what one of the built-in fractals, type a letter into the <img src="images/outline.png" class="inlineImgThin" alt="A rectangle with a dotted outline, representing a textbox to type in."/> box to start designing your own.
+                            </p>
+                            <p>
+                                &#x2022;Alternatively, you can click the <img src="images/outline.png" class="inlineImgThin" alt="A rectangle with a dotted outline, representing a textbox to type in."/> box but then draw a shape on the <img src="images/canvas.png" class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas. Drawing on the <img src="images/canvas.png" class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas while a <img src="images/outline.png" class="inlineImgThin" alt="A rectangle with a dotted outline, representing a textbox to type in."/> box is selected will fill in all the letters and rules for you.
+                            </p>
+                        </span>
+                    </div>
+                </div>
+                <div class="hasToolTip">
+                    <div id="replacementRules"></div>
+                    <div class="toolTipAdjustPosition">&#x2022;These are "replacement rules." They say what other letters a particular letter turns into as the string of letters grows.</div>
+                </div>
+                <div class="hasToolTip">
+                    <div id="interpretationRules"></div>
+                    <span class="toolTipAdjustPosition">&#x2022;These are "interpretation rules." They turn the letters into instructions. The computer draws a line whenever it finds a letter that means "Step Forward" or "Step Backward.</span>
+                </div>
+                <div class="metaStuff">
+                    <div class="hasToolTip">
+                        <div id="angleMeasureButtons">
+                            <span class="angleMeasureButtonsElement">
+                                <label for="degrees">Degrees</label><input type="radio" id="degrees" name="angleMeasure" value="degrees" checked/>
+                            </span>
+                            <span class="angleMeasureButtonsElement">
+                                <label for="radians">Radians</label><input type="radio" id="radians" name="angleMeasure" value="radians" />
+                            </span>
+                        </div>
+                        <span class="toolTipAdjustPosition">&#x2022;Do you want to use degrees or radians for angles? You can switch back and forth whenever you want.</span>
+                    </div>
+                    <div id="iterationsDiv" class="hasToolTip">
+                        <label for="iterations">Iterations: </label>
+                        <input type="text" id="iterations">
+                        <span class="toolTip">&#x2022;The string of letters will grow (using the replacement rules), one step at a time. How many times do you want the string to grow?</span>
+                    </div>
+                </div>
+                <div id="animateDIV">
+                    <span class="hasToolTip">
+                        <label for="forceCenterZoom">Force Fractal to Fit Screen?
+                        </label>
+                        <input type="checkbox" id="forceCenterZoom">
+                        <span class="toolTip">&#x2022;If you want the fractal to always stay entirely on screen, and to always be fully "zoomed in," check this box. Some fractals move around quickly, however, so checking this box can make the animation "jerky." For a smoother animation, leave the box unchecked.</span>
+                    </span>
+                    <br/>
+                    <span class="hasToolTip">
+                        <span class="toolTipAdjustPosition">&#x2022;Do want to watch an animation of the fully-grown fractal, or do you want to see a sequence of static images showing how the fractal grew, from "iteration" to "iteration"?</span>
+                        <select id="lindenmayerAnimationStyle">
+                            <option value="lindenmayerAnimate">Animate Final Iteration</option>
+                            <option value="lindenmayerIterate">Show Iteration Sequence</option>
+                        </select>
+                    </span>
+                    <span class="hasToolTip">
+                        <button id="buttonGo">GO</button>    
+                        <span class="toolTip">&#x2022;Click here to see fractal.</span>  
+                    </span>  
+                </div>      
+                <div id="output">
+                    <div id="percent"><span class="outputLabel"></span><span class="outputData"></span></div>
+                    <div id="angleSum"><span class="outputLabel"></span><span class="outputData"></span></div>
+                    <div id="stringLength"><span class="outputLabel"></span><span class="outputData"></span></div>
+                    <button id="viewStringButton" style="display:none">View Instruction String</button>
+                    <div id="scale"><div class="outputLabel"></div><div class="outputData"></div></div>
+                </div>
+                <div id="consoleLog"></div> 
+            </div>
+            <div id="primes" style="display: none">
+                <div class="hasToolTip">
+                    <select id="primeAnimationStyle">
+                        <option value="primeAngle">Differentiate by Angle</option>
+                        <option value="primeSpeed">Differentiate by Speed</option>
+                    </select>
+                    <span class="toolTip">
+                        <p>
+                            &#x2022;The number line will bend at each integer, depending on which prime factors you select below. You can have it bend different amounts for each prime factor, if you want.
+                        </p>
+                        <p>
+                            &#x2022;Do you want to specify the starting and ending <u>angles</u> for each prime factor? Or do you want to specify the <u>speed</u> the numberline should bend for each prime factor?
+                        </p>
+                    </span>
+                </div>
+                <label for="selectAll">All</label>
+                <input type="checkbox" id="selectAll">
+                <div class="hasToolTip">
+                    <div id="2div">
+                        <label for="2">&nbsp;&nbsp;2</label>
+                        <input type="checkbox" class="primeCheckbox" id="2">
+                        <label for="2start">&nbsp;From angle:</label>
+                        <input type="text" class="primeStartBox" id="2start">
+                        <label for="2angle">&nbsp;To:</label>
+                        <input type="text" class="primeEndBox" id="2angle">
+                        <span class="currentAngle"></span>
+                    </div>
+                    <div id="3div">
+                        <label for="3">&nbsp;&nbsp;3</label>
+                        <input type="checkbox" class="primeCheckbox" id="3">
+                        <label for="3start">&nbsp;From angle:</label>
+                        <input type="text" class="primeStartBox" id="3start">
+                        <label for="3angle">&nbsp;To:</label>
+                        <input type="text" class="primeEndBox" id="3angle">
+                        <span class="currentAngle"></span>
+                    </div>
+                    <div id="5div">
+                        <label for="5">&nbsp;&nbsp;5</label>
+                        <input type="checkbox" class="primeCheckbox" id="5">
+                        <label for="5start">&nbsp;From angle:</label>
+                        <input type="text" class="primeStartBox" id="5start">
+                        <label for="5angle">&nbsp;To:</label>
+                        <input type="text" class="primeEndBox" id="5angle">
+                        <span class="currentAngle"></span>
+                    </div>
+                    <div id="7div">
+                        <label for="7">&nbsp;&nbsp;7</label>
+                        <input type="checkbox" class="primeCheckbox" id="7">
+                        <label for="7start">&nbsp;From angle:</label>
+                        <input type="text" class="primeStartBox" id="7start">
+                        <label for="7angle">&nbsp;To:</label>
+                        <input type="text" class="primeEndBox" id="7angle">
+                        <span class="currentAngle"></span>
+                    </div>
+                    <div id="11div">
+                        <label for="11">&nbsp;11</label>
+                        <input type="checkbox" class="primeCheckbox" id="11">
+                        <label for="11start">&nbsp;From angle:</label>
+                        <input type="text" class="primeStartBox" id="11start">
+                        <label for="11angle">&nbsp;To:</label>
+                        <input type="text" class="primeEndBox" id="11angle">
+                        <span class="currentAngle"></span>
+                    </div>
+                    <div id="13div">
+                        <label for="13">&nbsp;13</label>
+                        <input type="checkbox" class="primeCheckbox" id="13">
+                        <label for="13start">&nbsp;From angle:</label>
+                        <input type="text" class="primeStartBox" id="13start">
+                        <label for="13angle">&nbsp;To:</label>
+                        <input type="text" class="primeEndBox" id="13angle">
+                        <span class="currentAngle"></span>
+                    </div>
+                    <div id="17div">
+                        <label for="17">&nbsp;17</label>
+                        <input type="checkbox" class="primeCheckbox" id="17">
+                        <label for="17start">&nbsp;From angle:</label>
+                        <input type="text" class="primeStartBox" id="17start">
+                        <label for="17angle">&nbsp;To:</label>
+                        <input type="text" class="primeEndBox" id="17angle">
+                        <span class="currentAngle"></span>
+                    </div>
+                    <div id="19div">
+                        <label for="19">&nbsp;19</label>
+                        <input type="checkbox" class="primeCheckbox" id="19">
+                        <label for="19start">&nbsp;From angle:</label>
+                        <input type="text" class="primeStartBox" id="19start">
+                        <label for="19angle">&nbsp;To:</label>
+                        <input type="text" class="primeEndBox" id="19angle">
+                        <span class="currentAngle"></span>
+                    </div>
+                    <span class="toolTipAdjustPosition">
+                        <p>
+                            &#x2022;The positive integers (1, 2, 3, . . .) are made of prime numbers. Here are the prime numbers that are less than 20. Choose which of the prime factors you want to use.
+                        </p>
+                        <p>
+                            &#x2022;To start, try only selecting "2," then set 2's "from" and "to" angles both to 90.
+                        </p>
+                        </span>
+                </div>
+                <div class="hasToolTip">
+                    <label for="numberLineLength">Extend number line to:</label>
+                    <input type="text" id="numberLineLength">
+                    <span class="toolTip">&#x2022;The number line extends to infinity, but computers can't draw a line that long. The app will try to choose a good number, but you can adjust it yourself. Longer lines will lead to slower animation.</span>
+                </div>
+                <button id="buttonProcess">GO</button>
+            </div>
+        </div>
+        <div id="phaser">
+            <div id="controlButtons" style="visibility:hidden">
+                <div class="buttonColumn">
+                    <button id="buttonRotateLeft">&larrpl;</button>
+                    <br/>
+                    <button id="buttonLeft">&larr;</button>
+                </div><div class="buttonColumn">
+                    <button id="buttonUp">&uarr;</button>
+                    <br/>
+                    <button id="buttonDown">&darr;</button>
+                </div><div class="buttonColumn">
+                    <button id="buttonRotateRight">&cudarrl;</button>
+                    <br/>
+                    <button id="buttonRight">&rarr;</button>
+                </div><div class="buttonColumn">
+                    <button id="buttonZoomIn">+</button>
+                    <br/>
+                    <button id="buttonZoomOut">&ndash;</button>
+                </div><div class="buttonColumn">
+                    <button id="buttonCenter">&bowtie;</button>
+                </div><div class="buttonColumn">
+                    <button id="buttonPlay">&#9654;</button>
+                    <br/>
+                    <button id="buttonPause"><strong>&parallel;</strong></button>
+                </div><div class="buttonColumn">
+                    <button id="buttonFast">&#9835;</button>
+                    <br/>
+                    <button id="buttonSlow">&#9833;</button>
+                </div><div class="buttonColumn">
+                    <button id="buttonEnd">&rarrb;</button>
+                    <br/>
+                    <button id="buttonStart">&larrb;</button>
+                </div><div class="buttonColumn">
+                    <button id="buttonThick">&#10074;</button>
+                    <br/>
+                    <button id="buttonThin">&#10073;</button>
+                </div><div class="buttonColumn">
+                    <button id="buttonLineColor">&nbsp;</button>
+                </div><div class="buttonColumn">
+                    <button id="buttonLineWhite">&nbsp;</button>
+                </div><div class="buttonColumn">
+                    <button id="buttonLineBlack">&nbsp;</button>
+                </div>  
+            </div>
+        </div> 
+        <div id="instructionStringContainer" style="display: none">
+            <div id="instructionStringContainerText"></div>
+            <button id="closeInstructionStringButton" class="closeButton">&#10005; CLOSE</button>
+        </div>  
+        <div id="controlsContainer" style="display: none">
+            <div id="controlsHeader">Controls</div>
+            <div class="controlsSubHeader">Move Camera</div>
+            <div id="moveCamera" class="controlsSection">
+                <p>
+                    &#x2022; <span class="entryHeader">Right:</span>&nbsp;<span class="keyText">&rarr;</span> key<br/>
+                    &#x2022; <span class="entryHeader">Left:</span>&nbsp;&nbsp;<span class="keyText">&larr;</span> key<br/>
+                    &#x2022; <span class="entryHeader">Up:</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyText">&uarr;</span> key<br/>
+                    &#x2022; <span class="entryHeader">Down:</span>&nbsp;&nbsp;<span class="keyText">&darr;</span> key<br/>
+                    &nbsp;&nbsp;Or: use buttons that appear when you move the mouse pointer over the <img src="images/canvas.png" class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas.
+                </p>
+            </div>
+            <div class="controlsSubHeader">Rotate & Zoom</div>
+            <div id="rotateZoom" class="controlsSection">
+                <p>
+                    &#x2022; <span class="entryHeader">Rotate image right:</span>&nbsp;hold <span class="keyText">shift</span> key and press <span class="keyText">&rarr;</span> key<br/>
+                    &#x2022; <span class="entryHeader">Rotate image left:</span>&nbsp;&nbsp;hold <span class="keyText">shift</span> key and press <span class="keyText">&larr;</span> key<br/>
+                    &nbsp;&nbsp;Or: use <span class="keyText">&cudarrl;</span> and <span class="keyText">&larrpl;</span> buttons that appear when you move the mouse pointer over the <img src="images/canvas.png" class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas.
+                </p>
+                <p>
+                    &#x2022; <span class="entryHeader">Zoom in:</span>&nbsp;&nbsp;hold <span class="keyText">shift</span> key and press <span class="keyText">&uarr;</span> key<br/>
+                    &#x2022; <span class="entryHeader">Zoom out:</span>&nbsp;hold <span class="keyText">shift</span> key and <span class="keyText">&darr;</span> key<br/>
+                    &nbsp;&nbsp;Or: use <span class="keyText">+</span> and <span class="keyText">&ndash;</span> buttons that appear when you move the mouse pointer over the <img src="images/canvas.png" class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas.
+                </p>
+                <p>
+                    &#x2022; <span class="entryHeader">Center on fractal and fit it to screen:</span> <span class="keyText">enter</span> (or <span class="keyText">return</span>) <span class="keyText">key</span><br/>
+                    &nbsp;&nbsp;Or: use <span class="keyText">&bowtie;</span> button that appears when you move the mouse pointer over the <img src="images/canvas.png" class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas.
+                </p>
+            </div>
+            <div class="controlsSubHeader">Play Animation</div>
+            <div id="playAnimation" class="controlsSection">
+                <p>
+                    &#x2022; <span class="entryHeader">Play from beginning:</span> click the <span class="keyText">GO</span> button.<br/>
+                    &#x2022; <span class="entryHeader">Pause while playing:</span> <span class="keyText">space</span> bar<br/>
+                    &nbsp;&nbsp;Or: use <span class="keyText">&#9654;</span> and <span class="keyText"><strong>&parallel;</strong></span> buttons that appear when you move the mouse pointer over the <img src="images/canvas.png" class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas.
+                </p>
+                <p>
+                    &#x2022; <span class="entryHeader">Jump to end:</span>&nbsp;&nbsp;&nbsp;hold <span class="keyText">shift</span> key and press <span class="keyText">&#10095;</span> key (the <span class="keyText">period</span> key)<br/>
+                    &#x2022; <span class="entryHeader">Jump to start:</span> hold <span class="keyText">shift</span> key and press <span class="keyText">&#10094;</span> key (the <span class="keyText">comma</span> key)<br/>
+                    &nbsp;&nbsp;Or: use the <span class="keyText">&rarrb;</span> and <span class="keyText">&larrb;</span> buttons that appear when you move the mouse pointer over the <img src="images/canvas.png" class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas.
+                </p>
+                <p>
+                    &#x2022; <span class="entryHeader">After pause, continue:</span>&nbsp;<span class="keyText">space</span> bar<br/>
+                    &#x2022; <span class="entryHeader">After pause, play animation forward:</span>&nbsp;&nbsp;<span class="keyText">&#10095;</span> key (the <span class="keyText">period</span> key)<br/>
+                    &#x2022; <span class="entryHeader">After pause, play animation backward:</span> <span class="keyText">&#10094;</span> key (<span class="keyText">comma</span> key)<br/>
+                    &nbsp;&nbsp;Alas, there's only the <span class="keyText">&#9654;</span> and <span class="keyText"><strong>&parallel;</strong></span> buttons if you don't want to use keyboard commands.
+                </p>
+                <p>
+                    &#x2022; <span class="entryHeader">Slow down while playing forward:</span>&nbsp;&nbsp;press/hold the <span class="keyText">&#10094;</span> key<br/>
+                    &#x2022; <span class="entryHeader">Slow down while playing backward:</span> press/hold the <span class="keyText">&#10095;</span> key<br/>
+                    &nbsp;&nbsp;Or: use the <span class="keyText">&#9835;</span> and <span class="keyText">&#9833;</span> buttons that appear when you move the mouse pointer over the <img src="images/canvas.png" class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas.
+                </p>
+            </div>
+            <div class="controlsSubHeader">Line Thickness & Color</div>
+            <div id="lineDisplay" class="controlsSection">
+                <p>
+                    &#x2022; <span class="entryHeader"><span class="thickerText">Make lines thicker</span>:</span> <span class="keyText">&rbrack;</span> (or <span class="keyText">&#10101;</span>) key<br/>
+                    &#x2022; <span class="entryHeader"><span class="thinnerText">Make lines thinner</span>:</span> <span class="keyText">&lbrack;</span> (or <span class="keyText">&#10100;</span>) key<br/>
+                    &nbsp;&nbsp;Or: use the <span class="keyText">&#10074;</span> and <span class="keyText">&#10073;</span> buttons that appear when you move the mouse pointer over the <img src="images/canvas.png" class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas.
+                </p>
+                <p>
+                    &#x2022; <span class="entryHeader">Colorful line with black background:</span> hold <span class="keyText">shift</span> key and press <span class="keyText">1</span> key<br/>
+                    &#x2022; <span class="entryHeader">White line with black background:</span>&nbsp;&nbsp;&nbsp;&nbsp;hold <span class="keyText">shift</span> key and press <span class="keyText">2</span> key<br/>
+                    &#x2022; <span class="entryHeader">Black line with white background:</span>&nbsp;&nbsp;&nbsp;&nbsp;hold <span class="keyText">shift</span> key and press <span class="keyText">3</span> key<br/>
+                    &nbsp;&nbsp;Or: use the <span class="keyText">color</span> buttons that appear when you move the mouse pointer over the <img src="images/canvas.png" class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas.
+                </p>
+            </div>
+            <button id="closeControlsButton" class="closeButton">&#10005; CLOSE</button>
+        </div>
+        <div id="infoContainer" style="display: none">
+            <div class="infoHeader">About this app</div>
+            <div class="infoSection">
+                <p>
+                    The Fractalline app is a tool for exploring mathematical and algorithmic line art. 
+                </p>
+                <p>
+                    It has two sides (or modes), one devoted to Lindenmayer systems, and the other devoted to <a href="#primeInfoSection">prime factors and the number line</a>.
+                </p>
+                <p>
+                    You can use the app in both modes to discover and/or create fractals.
+                </p>
+            </div>
+            <div class="infoHeader">Lindenmayer Systems</div>
+            <div class="infoSubSection">
+                <p>
+                    A Lindenmayer system needs two things: symbols and rules. [For more info, see <a href="https://en.wikipedia.org/wiki/L-system">Wikipedia</a> and <a href="http://algorithmicbotany.org/papers/#abop">a book co-written by Lindenmayer</a>]
+                </p>
+            </div>
+            <div class="infoSubHeader">Symbols</div>
+            <div class="infoSubSection">
+                <p>
+                    On the symbols side, there is:
+                </p>
+                <ol>
+                    <li>a set of symbols you are allowed to use</li> 
+                    <li>a seed (a particular symbol [or sequence of symbols] that you want to start with).</li>
+                </ol>
+                <p>
+                    For example, if I wanted to make a Lindenmayer system, I might choose:
+                </p>
+                <ol> 
+                    <li>"f," "g," "l," and "r" as the set of symbols that I'm allowed to use, and</li>
+                    <li>"f" as the seed I want to start with.</li>
+                </ol>
+            </div>
+            <div class="infoSubHeader">Rules</div>
+            <div class="infoSubSection">
+                <p>
+                    On the rules side, there is:
+                </p>
+                <ol start="3">
+                    <li>a set of replacement rules (one for each symbol), and</li>
+                    <li>a set of interpretation rules (one for each symbol).</li>
+                </ol>
+                <p>
+                    For example, I might use the following replacement rules for my Lindenmayer system: 
+                </p>
+                <ul>
+                    <li>"f" is replaced by "flg" (if you read an "f," erase it and write an "f," "l," and "g" in its place)</li>
+                    <li>"g" is replaced by "frg" (if you read a "g," erase it and write an "f," "r," and "g" in its place)</li>
+                    <li>"r" is replaced by "r" (if you read an "r", erase it and write another "r" in its place)</li>
+                    <li>"l" is replaced by "l" (if you read an "l", erase it and write another "l" in its place)</li>
+                </ul>
+                <p>
+                    Notice that there has to be one -- but only one -- replacement rule for every symbol you're allowed to use in the system.
+                </p>
+            </div>
+            <div class="infoSubSection">
+                <p>
+                    In addition to having a replacement rule for each symbol, a Lindenmayer system needs an interpretation rule for each symbol.
+                </p>
+                <p>
+                    So, imagine that we use use the following interpretation rules:
+                </p>
+                <ul>
+                    <li>"f" means "move forward one step while drawing a line"</li>
+                    <li>"g" means "move forward one step while drawing a line"</li>
+                    <li>"r" means "turn right 90 degrees"</li>
+                    <li>"l" means "turn right 90 degrees"</li>
+                </ul>
+                <p>
+                    Just like with replacement rules, there has to be one -- but only one -- interpretation rule for every symbol you're allowed to use in the system.
+                </p>
+            </div>
+            <div class="infoSubHeader">Example: Applying Replacement Rules</div>
+            <div class="infoSubSection">
+                <p>
+                    So, imagine I start with the seed, "f." I would read that "f" and check the replacement rule for "f" in my list of replacement rules. 
+                </p>
+                    The replacement rule for "f" says to erase the "f" and write "flg" instead. So, I would do just that: 
+                </p>
+                <p>    
+                    &nbsp;&nbsp;&#x2022;"<span class="highlight">f</span>" becomes "<span class="highlight">flg</span>"
+                </p>
+                <p>
+                    Next, imagine that I re-read the seed. Where it used to be one letter ("f"), it is now three: "flg." I start by reading the "f" in "flg." I look up the replacement rule for "f" and see that "f" is replaced by "flg."
+                </p>
+                <p>
+                    &nbsp;&nbsp;&#x2022;"<span class="highlight">f</span>lg" becomes "<span class="highlight">flg</span>lg"
+                </p>
+                <p>
+                    The next letter after the "f" (which we just replaced) was an "l," so I check the replacement rule for "l." Turns out, "l" gets replaced by itself. So:
+                </p>
+                <p>
+                    &nbsp;&nbsp;&#x2022;"<span class="old">flg</span><span class="highlight">l</span>g" becomes "<span class="old">flg</span><span class="highlight">l</span>g"
+                </p>
+                <p>
+                    Finally, I read the "g". The replacement rule for "g" says to replace it with "frg." So I do that.
+                </p>
+                <p>
+                    &nbsp;&nbsp;&#x2022;"<span class="old">flgl</span><span class="highlight">g</span>" becomes "<span class="old">flgl</span><span class="highlight">frg</span>"
+                </p>
+            </div>
+            <div class="infoSubSection">
+                After two "readings," the seed for my Lindenmayer system has grown from a single "f" into the string of symbols: "frgrflg."
+                <ol start="0">
+                    <li>Seed starts as: "f"</li>
+                    <li>After reading 1, seed is: "flg" (because "f" turns into "flg")</li>
+                    <li>After reading 2, seed is: "flglfrg" (because "f" turns into "flg," "l" remains itself, and "g" turns into "frg")</li>
+                </ol>
+                And we could keep going. If we read the seed a third time:
+                <ul>
+                    <li>"<span class="highlight">f</span>lglfrg" becomes "<span class="highlight">flg</span>lglfrg"</li>
+                    <li>"<span class="old">flg</span><span class="highlight">l</span>glfrg" becomes "<span class="old">flg</span><span class="highlight">l</span>glfrg"</li>
+                    <li>"<span class="old">flgl</span><span class="highlight">g</span>lfrg" becomes "<span class="old">flgl</span><span class="highlight">frg</span>lfrg"</li>
+                    <li>"<span class="old">flglfrg</span><span class="highlight">l</span>flg" becomes "<span class="old">flglfrg</span><span class="highlight">l</span>frg"</li>
+                    <li>"<span class="old">flglfrgl</span><span class="highlight">f</span>rg" becomes "<span class="old">flglfrgl</span><span class="highlight">flg</span>rg"</li>
+                    <li>"<span class="old">flglfrglflg</span><span class="highlight">r</span>g" becomes "<span class="old">flglfrglflg</span><span class="highlight">r</span>g"</li>
+                    <li>"<span class="old">flglfrglflgr</span><span class="highlight">g</span>" becomes "<span class="old">flglfrglflgr</span><span class="highlight">frg</span>"</li>
+                </ul>
+                So, after a third reading, our seed would be: "flglfrglflgrfrg"
+                <ol start="0">
+                    <li>Seed starts as: "f"</li>
+                    <li>After reading 1, seed is: "flg"</li>
+                    <li>After reading 2, seed is: "flglfrg"</li>
+                    <li>After reading 3, seed is: "flglfrglflgrfrg"</li>
+                </ol>
+                <p>
+                    And we could keep re-reading our string of symbols over and over, as many times as we want. Each time we read through the seed and apply the replacement rules is called an "iteration."
+                </p>
+                <p>
+                    We can put the seed through as many readings ("iterations") as we want, making it as long as we want.
+                </p>
+            </div>
+            <div class="infoSubHeader">Example: Applying Interpretation Rules</div>
+            <div class="infoSection">
+                <p>
+                    Then we would use the interpretation rules as follows:
+                </p>
+                <ol>
+                    <li>"Grow" (iterate) the seed as many times as we wish, using the replacement rules.</li>
+                    <li>Read the "all grown up" version of the seed, one letter at a time (but this time, don't do any replacing).</li>
+                    <li>As you read each letter, do what the interpretation rule for each letter tells you to do.</li>
+                </ol>
+                <p>
+                    So, let's try it out on the seed we grew above:
+                </p>
+                <ol>
+                    <li><span class="highlight">f</span>lglfrglflgrfrg: "f" means "move forward one step while drawing a line." So, we draw a short line.</li>
+                    <li>f<span class="highlight">l</span>glfrglflgrfrg: "l" means "turn left 90 degrees." So, we do.</li>
+                    <li>fl<span class="highlight">g</span>lfrglflgrfrg: "g" means the same as "f." We take one step forward, in the new direction we are now facing, drawing a line.</li>
+                    <li>flg<span class="highlight">l</span>frglflgrfrg: We turn left 90 degrees again.</li>
+                    <li>flgl<span class="highlight">f</span>rglflgrfrg: We take one step forward, drawing a line.</li>
+                    <li>flglf<span class="highlight">r</span>glflgrfrg: "r" means "turn right 90 degrees." So, we do so.</li>
+                    <li>flglfr<span class="highlight">g</span>lflgrfrg: We take one step forward, drawing a line.</li>
+                    <li>flglfrg<span class="highlight">l</span>flgrfrg: We turn left 90 degrees again.</li>
+                    <li>flglfrgl<span class="highlight">f</span>lgrfrg: We take one step forward, drawing a line.</li>
+                    <li>flglfrglf<span class="highlight">l</span>grfrg: We turn left 90 degrees again.</li>
+                    <li>flglfrglfl<span class="highlight">g</span>rfrg: We take one step forward, drawing a line.</li>
+                    <li>flglfrglflg<span class="highlight">r</span>frg: We turn right 90 degrees again.</li>
+                    <li>flglfrglflgr<span class="highlight">f</span>rg: We take one step forward, drawing a line.</li>
+                    <li>flglfrglflgrf<span class="highlight">r</span>g: We turn right 90 degrees again.</li>
+                    <li>flglfrglflgrfr<span class="highlight">g</span>: We take one step forward, drawing a line.</li>
+                </ol>
+                <p>Here's what that would look like:</p>
+                <img src="images/dragoncurve.gif" alt="An animation of the steps described above; a purple arrow draws a series of orange lines, periodically turning to draw in a new direction. The letter representing the instruction that the arrow is carrying out is displayed along with each update to the image."/>
+                <p>This is how the Dragon Curve fractal begins. For background on the Dragon Curve, see <a href="https://en.wikipedia.org/wiki/Dragon_curve">Wikipedia</a> (though note that the Lindenmayer system on that page is unnecessarily complicated). To explore the Fractalline version of the Dragon Curve, <a href="https://chambergon.com/fractal/?seed=f&f=flg_1_0&g=frg_1_0&r=r_3_90&l=l_4_90&it=13">click here</a> (it uses the system described on the <a href="https://en.wikipedia.org/wiki/L-system#Example_6:_dragon_curve">L-System Wikipedia page</a>). After clicking the "GO" button, furthermore, a new button toward the bottom of the screen will appear that will allow you to see how the string of symbols has grown from iteration to iteration.</p>
+            </div>
+            <div class="infoHeader" id="primeInfoSection">Prime Factors and the Number Line</div>
+            <div class="infoSubSection">
+                <p>
+                    The "natural numbers" (or "counting numbers," or "positive integers") are the numbers 1, 2, 3, 4, 5, and so on. We usually think of them as being evenly spaced along "the number line":
+                </p>
+                <img src="images/numberline.png" alt="A pixelated drawing of the numberline, with the numbers from 1 to 32 written beneath."/>
+            </div>
+            <div class="infoSubHeader">Composites and Primes</div>
+            <div class="infoSubSection">
+                <p>
+                    We like to think of these numbers as divided into different types. For example, every natural number is either even or odd. However, the division we'll be interested in here is that between composites and primes.
+                </p>
+                <p>
+                    A composite number is a natural number larger than 1 that you can divide into equal chunks that are also natural numbers larger than 1. For example, 4 is a natural number larger than 1, and can be divided into two equal chunks -- 2 and 2 -- that are also natural numbers larger than 1. Similarly, 12 is a natural number larger than 1 that can be divided into equal chunks -- 4, 4, and 4 -- that are also natural numbers larger than 1.
+                </p>
+                <p>
+                    In contrast, a prime number is a natural number larger than 1 that you <em>can't</em> divide into equal chunks that are also natural numbers larger than 1. For example, 5 is a natural number larger than 1, but there's no way of splitting it up into equal chunks that are also natural numbers larger than 1. If you split it into two equal chunks, you'd get 2.5 and 2.5, neither of which are natural numbers. If you split it into 3 equal chunks, you'd get 1.666..., 1.666..., and 1.666..., which aren't natural numbers. And if you split it into 5 equal chunks, you'd get 1, 1, 1, 1, and 1, which are all natural numbers, but aren't larger than 1.
+                </p>
+            </div>
+            <div class="infoSubHeader">Prime Factorizations</div>
+            <div class="infoSubSection">
+                <p>
+                    One thing <a href="https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic#History">mathematicians figured out long ago</a> is that every composite number can be created by multiplying together a unique set of prime numbers. For example, 14 is composite, but can be produced by multiplying one 2 times one 7 (i.e., 2<sup>1</sup> x 7<sup>1</sup> = 14). However, if you change that set by including other prime numbers (e.g., 2<sup>1</sup> x 7<sup>1</sup> x 11<sup>1</sup>), or changing the number of prime numbers that are already present (e.g., 2<sup>5</sup> x 7<sup>4</sup>), you'll get different composite numbers.
+                </p>
+                <p>
+                    The unique set of prime numbers that, produce a particular composite number when multiplied together, is called the "prime factorization" of that composite number. What distinguishes one prime factorization from another is (1) which prime numbers it includes, and (2) how many of each of those prime numbers it includes. (The prime factorization of 2,250, for example, is 2<sup>1</sup> x 3<sup>2</sup> x 5<sup>3</sup>. It contains one 2, two 3s, and three 5s.)
+                </p>
+            </div>
+            <div class="infoSubSection">
+                <p>
+                    Once you have realized that every natural number will either be composite or prime, you might start to ask questions like:
+                </p>
+                <ul>
+                    <li>Is there an easy way to tell whether a given natural number is prime?</li>
+                    <li>If a number is composite, is there an easy way of figuring out what its prime factorization is?</li>
+                    <li>If I know the prime factorization of one number (call it "<em>n</em>"), is there an easy way to figure out the prime factorization of the next number (<em>n</em>+1)?</li>
+                    <li>If I know which numbers were prime, up to a particular point on the number line, is there a way to predict what the next prime number will be?</li>
+                    <li>Or, to put the previous question in another way, do the prime numbers follow a pattern? Are they distributed along the number line in a predictable way? Or is their placement entirely random?</li>
+                    <li>Etc.</li>
+                </ul>
+            </div>
+            <div class="infoSubHeader">Sieves</div>
+            <div class="infoSubSection">
+                <p>
+                    Perhaps the simplest way to find out which numbers are prime, and which aren't, is to use what is called a "<a href="https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes">sieve</a>." A sieve is just an algorithm (a series of instructions to follow) that crosses out all the composite numbers along a particular part of the number line. Since all the composites will get crossed out, only the primes will be left.
+                </p>
+                <p>
+                    The <a href="https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes">Sieve of Eratosthenes</a>, for example, says to create a list of numbers. Then, start going through the list. Whenever you find a prime number, cross out all its multiples in the list. Whenever you get to a number you haven't crossed out, you know that number must be the next prime.
+                </p>
+            </div>
+            <div class="infoSubSection">
+                <p>
+                    For example, imagine we write down the natural numbers from 1 through 100. We skip 1, because it is neither prime nor composite. The first number we encounter is 2, and it hasn't been crossed out. So, it must be prime. We then cross out all the multiples of 2 (e.g., we cross out 4, 6, 8, 10, 12, . . .).
+                </p>
+                <p>
+                    After crossing out all the multiples of 2, we move on to the next number in the list: 3. We haven't crossed out 3 yet, so it must be prime. And that means we now need to cross out all the multiples of 3 (e.g., 6, 9, 12, 15, etc.)
+                </p>
+                <p>
+                    After crossing out all the multiples of 3, the next number we come to is 4. But 4 has already been crossed out, since it's a multiple of 2. So, we go on to 5. As it turns out, 5 hasn't been crossed out yet, so it i must be prime. We, therefore, cross out all the multiples of 5 (10, 15, 20, 25, etc.).
+                </p>
+                <p>
+                    Once we've crossed out all the multiples of 5, we move on to 6. Well, what we actually do is notice that 6 has already been crossed out (as a multiple of both 2 and 3), and thus we skip it and go to the next number that hasn't been crossed out: 7. Since it hasn't been crossed out yet, it must be prime.
+                </p>
+            </div>
+            <div class="infoSubHeader">A Different Sort of Sieve</div>
+            <div class="infoSubSection">
+                <p>
+                    The sort of sieve I'm interested in, however, not only tells you which numbers are prime, but gives you the prime factorizations of all the composite numbers along the way. Here's a snippet of its results:
+                </p>
+                <table>
+                    <tr class="spacingRow">
+                        <td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td></td><td class="columnHeader">1</td><td class="columnHeader">2</td><td class="columnHeader">3</td><td class="columnHeader">4</td><td class="columnHeader">5</td><td class="columnHeader">6</td><td class="columnHeader">7</td><td class="columnHeader">8</td><td class="columnHeader">9</td><td class="columnHeader">10</td><td class="columnHeader">11</td><td class="columnHeader">12</td><td class="columnHeader">13</td><td class="columnHeader">14</td><td class="columnHeader">15</td><td class="columnHeader">16</td><td class="columnHeader">17</td><td class="columnHeader">18</td><td class="columnHeader">19</td><td class="columnHeader">20</td><td class="columnHeader">21</td><td class="columnHeader">22</td><td class="columnHeader">23</td><td class="columnHeader">24</td><td class="columnHeader">25</td><td class="columnHeader">26</td><td class="columnHeader">27</td><td class="columnHeader">28</td><td class="columnHeader">29</td><td class="columnHeader">30</td><td class="columnHeader">31</td><td class="columnHeader">32</td><td class="columnHeader">...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">&nbsp;2:</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">3</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">4</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">3</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">5</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">&nbsp;3:</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td class="tableHighlight">3</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">&nbsp;4:</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">2</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">&nbsp;5:</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">&nbsp;6:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">&nbsp;7:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">&nbsp;8:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">&nbsp;9:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">10:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">11:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">12:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">13:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">14:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">15:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">16:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="infoSubSection">    
+                <p>
+                    Filling in the table is relatively simple. First, list all the natural numbers from 1 up to <em>m</em> along the top (where <em>m</em> is whatever maximum number you want to deal with; in the table above, <em>m</em> is 32). 
+                </p>
+                <p>
+                    Second, list all the natural numbers from 2 up to <em>m</em>/2 along the side of the table (in the table above, <em>m</em>/2 is 16).
+                </p>
+                <p>
+                    Third, work your way down the table, one row at a time. To fill in each row, you will need to create an ordered sequence ("array") of numbers, using the following series of steps:
+                    <div class="indent">For any natural number <em>n</em>:
+                        <ol>
+                            <li>Create an array containing nothing but a single 0 (This is "the current array.")</li>
+                            <li>Create duplicates of the current array until you have <em>n</em> copies thereof (including the original).</li> 
+                            <li>Append these <em>n</em> arrays to each other (linking them together, end-to-end) to form a single, larger array.</li>
+                            <li>Increase the final element in the new, larger array, by 1. The array in this state is now "the current array."</li>
+                            <li>If the current array is long enough for your purposes, stop. Otherwise, go to step 2.</li>
+                        </ol>
+                    </div>
+                </p>
+            </div>
+            <div class="infoSubHeader">Algorithm Examples</div>
+            <div class="infoSubSection">
+                <p>
+                    The sequence for the "2" row, for example, would look like this:
+                    <ul>
+                        <li>Step 1: [0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(this is the initial array, containing only a single 0)</li>
+                        <li>Step 2: [0], [0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(since <em>n</em>=2 here, we create 2 copies of the array)</li>
+                        <li>Step 3: [0, 0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(then we concatenate the arrays into one)</li>
+                        <li>Step 4: [0, 1]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(then we increment the final element)</li>
+                        <li>Step 2: [0, 1], [0, 1]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(going back to Step 2, we create <em>n</em> copies of the array)</li>
+                        <li>Step 3: [0, 1, 0, 1]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(then we append them together)</li>
+                        <li>Step 4: [0, 1, 0, 2]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(then we increase the final element by 1)</li>
+                        <li>Step 2: [0, 1, 0, 2], [0, 1, 0, 2] (and we go back to Step 2 . . .)</li>
+                        <li>Step 3: [0, 1, 0, 2, 0, 1, 0, 2]</li>
+                        <li>Step 4: [0, 1, 0, 2, 0, 1, 0, 3]</li>
+                        <li>Step 2: [0, 1, 0, 2, 0, 1, 0, 3], [0, 1, 0, 2, 0, 1, 0, 3]</li>
+                        <li>Step 3: [0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 3]</li>
+                        <li>Step 4: [0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 4]</li>
+                    </ul>
+                    Some of you might recognize this as the 2-adic valuation of n (<a href="https://oeis.org/A007814">A007814</a> from the OEIS).
+                </p>
+            </div>
+            <div class="infoSubSection">
+                <p>
+                    You fill in the other rows in the table in the same way. For example, the development of the sequence for the "3" row would look like this:
+                    <ul>
+                        <li>Step 1: [0]</li>
+                        <li>Step 2: [0], [0]. [0]</li>
+                        <li>Step 3: [0, 0, 0]</li>
+                        <li>Step 4: [0, 0, 1]</li>
+                        <li>Step 2: [0, 0, 1], [0, 0, 1], [0, 0, 1]</li>
+                        <li>Step 3: [0, 0, 1, 0, 0, 1, 0, 0, 1]</li>
+                        <li>Step 4: [0, 0, 1, 0, 0, 1, 0, 0, 2]</li>  
+                        <li>Step 2: [0, 0, 1, 0, 0, 1, 0, 0, 2], [0, 0, 1, 0, 0, 1, 0, 0, 2], [0, 0, 1, 0, 0, 1, 0, 0, 2]</li>
+                        <li>Step 3: [0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0, 1, 0, 0, 1, 0, 0, 2]</li>
+                        <li>Step 4: [0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0, 1, 0, 0, 1, 0, 0, 3]</li>
+                    </ul>
+                    This integer sequence is the 3-adic valuation of n (<a href="https://oeis.org/A007949">A007949</a> from the OEIS)
+                </p>
+            </div>
+            <div class="infoSubHeader">Filtering Out the Composite Numbers</div>
+            <div class="infoSubSection">
+                <p>
+                    Once you have the table filled in, you might notice some patterns.
+                </p>
+                <ul>
+                    <li>Every row starts with a string of one or more 0s, followed by a 1.</li>
+                    <li>The first 1 in the row for <em>n</em> is always in the <em>n</em>th column. (The first 1 in the "3" row is in the "3" column. The first 1 in the "11" row is in the "11" column. Etc.)</li>
+                    <li>If the column of numbers above the first 1 in row <em>n</em> contains only zeros, then <em>n</em> is a prime number.</li>
+                    <li>If the column of numbers above the first 1 in row <em>n</em> contains any non-zero numbers, then <em>n</em> is composite.</li>
+                </ul>
+                <p>
+                    Having identified the composite numbers in the table, furthermore, we can eliminate them.
+                </p>
+                <table>
+                    <tr class="spacingRow">
+                        <td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td><td>&nbsp;|&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td></td><td class="columnHeader">1</td><td class="columnHeader">2</td><td class="columnHeader">3</td><td class="columnHeader">4</td><td class="columnHeader">5</td><td class="columnHeader">6</td><td class="columnHeader">7</td><td class="columnHeader">8</td><td class="columnHeader">9</td><td class="columnHeader">10</td><td class="columnHeader">11</td><td class="columnHeader">12</td><td class="columnHeader">13</td><td class="columnHeader">14</td><td class="columnHeader">15</td><td class="columnHeader">16</td><td class="columnHeader">17</td><td class="columnHeader">18</td><td class="columnHeader">19</td><td class="columnHeader">20</td><td class="columnHeader">21</td><td class="columnHeader">22</td><td class="columnHeader">23</td><td class="columnHeader">24</td><td class="columnHeader">25</td><td class="columnHeader">26</td><td class="columnHeader">27</td><td class="columnHeader">28</td><td class="columnHeader">29</td><td class="columnHeader">30</td><td class="columnHeader">31</td><td class="columnHeader">32</td><td class="columnHeader">...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">&nbsp;2:</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">3</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">4</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">3</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td class="tableHighlight">5</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">&nbsp;3:</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td class="tableHighlight">3</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">&nbsp;5:</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">2</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">&nbsp;7:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">11:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">13:</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="tableHighlight">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>...</td>
+                    </tr>
+                    <tr>
+                        <td class="rowHeader">...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td>
+                    </tr>
+                </table>
+                <p>
+                    And now we can read off the prime factorization of each number by reading down the numbers in the column below it. Below "18," for example, there is a 1 in the "2" row, and a 2 in the "3" row. That means the prime factorization of 18 is one 2 times two 3s (2<sup>1</sup> x 3<sup>2</sup>). Similarly, the prime factorization of 26 is 2<sup>1</sup> x 13<sup>1</sup>, since it has a 1 in both the "2" and "13" columns, but zeros everywhere else.
+                </p>
+            </div>
+            <div class="infoSubSection">
+                <p>
+                    The eagle-eyed among you might have noticed that some numbers do not have the correct prime factorization in the table above. Specifically, the prime numbers larger than 13 do not have a "1" below them in the table below, as they ought to. For example, the prime factorization of 17 is 17<sup>1</sup>, so "17" ought to have a 1 below it in the row for "17."
+                </p>
+                <p>
+                    The problem is that we cut the table off at row 16, and then even got rid of the rows for 16, 15, and 14. Fortunately, however, this isn't actually a problem. We don't need all those rows to know that a given number is prime.
+                </p>
+                <p>
+                    As it turns out, we can read off the prime factorizations for any <em>composite</em> number <em>c</em> if we have included all the rows from 2 up to <em>c</em>/2. Furthermore, we can know that some natural number <em>n</em> is prime after only filling in the rows from 2 up to the square root of <em>n</em> (this is a fact common to all sieves, I believe). If all the rows in the column below <em>n</em> contain 0s, from the row for "2" up to the row for square root of <em>n</em>, then <em>n</em> is prime. And from knowing that a given <em>n</em> is prime, we automatically know that its prime factorization is <em>n</em><sup>1</sup>.
+                </p>
+            </div>
+            <div class="infoSubHeader">The Fractals Underlying this Sieve</div>
+            <div class="infoSubSection">
+                <p>
+                    The reason for talking about all of this here is that the rows in the body of the tables above are all fractal sequences. There are two ways of seeing this, furthermore. The first is this: 
+                </p>
+                <ol>
+                    <li>Start at the first element in the array.</li>
+                    <li>Delete the current element and the next <em>n</em><sup>2</sup>-1 elements (removing a total of <em>n</em><sup>2</sup> contiguous elements from the array).</li>
+                    <li>Skip over the next <em>n</em> elements.</li>
+                    <li>Go to Step 2.</li>
+                </ol>
+                <p>
+                    Assuming you start with an array of infinite length, you will find that following this algorithm will produce a second array that is identical to the first.
+                </p>
+                <p>
+                    That is, assuming you have extended any row in the table above to infinity, using the methodology for filling in the rows that was specified above, following the algorithm just described will produce a second array that is also infinite in length and identical to the one with which you started. This means, in turn, that every row in the table above contains itself.
+                </p>
+            </div>
+            <div class="infoSubSection">
+                <p>
+                    To illustrate, consider the "2" row:
+                </p>
+                <ol>
+                    <li>[0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 6, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 7, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 6, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 8, ...]</li>
+                    <li>[<span class="strikeThrough">0, 1, 0, 2,</span> 0, 1, <span class="strikeThrough">0, 3, 0, 1,</span> 0, 2, <span class="strikeThrough">0, 1, 0, 4,</span> 0, 1,<span class="strikeThrough"> 0, 2, 0, 1,</span> 0, 3,<span class="strikeThrough"> 0, 1, 0, 2,</span> 0, 1,<span class="strikeThrough"> 0, 5, 0, 1,</span> 0, 2,<span class="strikeThrough"> 0, 1, 0, 3,</span> 0, 1,<span class="strikeThrough"> 0, 2, 0, 1,</span> 0, 4,<span class="strikeThrough"> 0, 1, 0, 2,</span> 0, 1, <span class="strikeThrough">0, 3, 0, 1,</span> 0, 2,<span class="strikeThrough"> 0, 1, 0, 6,</span> 0, 1, <span class="strikeThrough">0, 2, 0, 1,</span> 0, 3, <span class="strikeThrough">0, 1, 0, 2,</span> 0, 1, <span class="strikeThrough">0, 4, 0, 1,</span> 0, 2, <span class="strikeThrough">0, 1, 0, 3,</span> 0, 1, <span class="strikeThrough">0, 2, 0, 1,</span> 0, 5, <span class="strikeThrough">0, 1, 0, 2,</span> 0, 1, <span class="strikeThrough">0, 3, 0, 1,</span> 0, 2, <span class="strikeThrough">0, 1, 0, 4,</span> 0, 1, <span class="strikeThrough">0, 2, 0, 1,</span> 0, 3, <span class="strikeThrough">0, 1, 0, 2,</span> 0, 1, <span class="strikeThrough">0, 7, 0, 1,</span> 0, 2, <span class="strikeThrough">0, 1, 0, 3,</span> 0, 1, <span class="strikeThrough">0, 2, 0, 1,</span> 0, 4, <span class="strikeThrough">0, 1, 0, 2,</span> 0, 1, <span class="strikeThrough">0, 3, 0, 1,</span> 0, 2, <span class="strikeThrough">0, 1, 0, 5,</span> 0, 1, <span class="strikeThrough">0, 2, 0, 1,</span> 0, 3, <span class="strikeThrough">0, 1, 0, 2,</span> 0, 1, <span class="strikeThrough">0, 4, 0, 1,</span> 0, 2, <span class="strikeThrough">0, 1, 0, 3,</span> 0, 1, <span class="strikeThrough">0, 2, 0, 1,</span> 0, 6, <span class="strikeThrough">0, 1, 0, 2,</span> 0, 1, <span class="strikeThrough">0, 3, 0, 1,</span> 0, 2, <span class="strikeThrough">0, 1, 0, 4,</span> 0, 1, <span class="strikeThrough">0, 2, 0, 1,</span> 0, 3, <span class="strikeThrough">0, 1, 0, 2,</span> 0, 1, <span class="strikeThrough">0, 5, 0, 1,</span> 0, 2, <span class="strikeThrough">0, 1, 0, 3,</span> 0, 1, <span class="strikeThrough">0, 2, 0, 1,</span> 0, 4, <span class="strikeThrough">0, 1, 0, 2,</span> 0, 1,<span class="strikeThrough"> 0, 3, 0, 1,</span> 0, 2,<span class="strikeThrough"> 0, 1, 0, 8,</span> ...]</li>
+                    <li>[0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 6, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0, 4, 0, 1, 0, 2, ...]</li>
+                </ol>
+            </div>
+            <div class="infoSubSection">
+                <p>
+                    The fact that each row in the table contains itself (that a part of each row is identical to the whole row, and thus must itself have a part that is identical to the whole, which must itself have a part . . .) means that every row in the sieve table is a fractal string (a fractal sequence of symbols). However, you can also see this by treating each row as a series of instructions for drawing a figure (as if it were part of a Lindenmayer system, as discussed above).
+                </p>
+                <p>
+                    Take the array for the "2" row, for example, and use the following interpretation rule: each number in the sequence tells you the number of 90-degree (clockwise) turns to make after taking a step forward (while drawing a line). If you do so, you will produce the following:
+                </p>
+                <img src="images/levyprime90.png" alt="An image of the Levy C-Curve fractal (also called the 'L&eacute;vy Dragon'), drawn in rainbow colors. The curve looks like a 'C', opening upward, and containing a number of trees or bushes of various sizes."/>
+                <p>
+                    You might recognize this as the <a href="https://en.wikipedia.org/wiki/L%C3%A9vy_C_curve">Levy C-Curve fractal.</a>
+                </p>
+                <p>
+                    Use the same interpretation rule, but employ 120-degree turns instead of 90-degree turns, and you get this:
+                </p>
+                <img src="images/levyprime120.png" alt="An image of the Levy Diamond fractal (or the 'L&eacute;vy Diamond'). It is shaped like an angular 'C', opening upward, and containing a range of thin diamond shapes (in the sense of 'diamond shape' used when refering to jewels, rather than in the sense used when refering to decks of cards) of various sizes"/>
+                <p>
+                    This is a (more attractive, in my opinion) version of the <a href="https://larryriddle.agnesscott.org/ifs/levy/levy.htm">Levy Diamond Fractal</a>.
+                </p>
+            </div>
+            <div class="infoSubSection">
+                <p>
+                    You can also find (visual fractals) using other rows from the table above. What I have yet to find, however, is a fractal that uses multiple rows. Perhaps you will be able to find one using this app!
+                </p>
+            </div>
+            <button id="closeInfoButton" class="closeButton">&#10005; CLOSE</button>
+        </div>
+        <div id="faqContainer" style="display: none">
+            <div class="faqQ">
+                How do I get rid of all the letters and boxes and whatnot that I don't want?
+            </div>
+            <div class="faqA">
+                <p>
+                    The fastest way is to click the image (with "Fractalline" and other "-line" words in it). A slower way is to empty all the textboxes. Whenever a letter is no longer being used in a textbox, the app will remove all references to it from the page.
+                </p>
+            </div>
+            <div class="faqQ">
+                How do I make a fractal?
+            </div>
+            <div class="faqA">
+                <p>
+                    You can either choose one from the menu that says, "Choose a fractal type" (in the Lindenmayer Mode of the app), or you can create your own. Before you try making your own, I would recommend picking a few from the menu, just to see how they are set up.
+                </p>
+                <p>
+                    When you're ready to make your own fractal, you need to do six things:
+                </p>
+                <ol>
+                    <li>Make sure you're in the "Lindenmayer" mode, and have a blank slate to work with. (You can accomplish both by clicking the image at the top left of the page).</li>
+                    <li>Choose a letter to start with, and type it into the ". . . or start a string" textbox.</li>
+                    <li>A new line will appear with the letter you just typed, followed by "becomes" and a second textbox. Enter one or more letters into this new textbox.</li>
+                    <li>If you enter any letters other than the original one you picked, lines for those letters, with their own textboxes will pop up. Decide what letters to enter into those new boxes.</li>
+                    <li>Below the lines with textboxes, lines with dropdown menus for each letter will also appear. For each letter, use its menu to select the instruction/command/action it will represent.</li>
+                    <li>Click the "GO" button.</li>
+                </ol>
+                <p>
+                    Alternatively, you can:
+                </p>
+                <ol>
+                    <li>Make sure you're in the "Lindenmayer" mode, and have a blank slate to work with. (You can accomplish both by clicking the image at the top left of the page).</li>
+                    <li>Click on the ". . . or start a string" textbox, but don't type anything.</li>
+                    <li>Click on the <img src="images/canvas.png"class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas and drag the mouse to draw a line.</li>
+                    <li>Click on one of the other textboxes that just appeared and draw one or more lines on the canvas.</li>
+                    <li>Repeat the previous step as many times as you like.</li>
+                    <li>Click the "GO" button.</li>
+                </ol>
+            </div>
+            <div class="faqQ">
+                I followed your instructions, and it didn't make a fractal. It made a mess, or just a straight line, or just a box, or something else that was boring.
+            </div>
+            <div class="faqA">
+                <p>
+                    If the app didn't produce a fractal, I'd recommend checking a few things:
+                </p>
+                <ul>
+                    <li><span class="entryHeader">Problem:</span>  It didn't draw anything.<br/>
+                        <span class="entryHeader">Potential Solution:</span> Make sure to set at least one of the letters to mean "Step Forward" or "Step Back." If they are all set to mean "Do Nothing" or "Turn," the app won't have anything to draw.</li>
+                    <li><span class="entryHeader">Problem:</span> It just drew a straight line.<br/> 
+                        <span class="entryHeader">Potential Solution:</span> Set at least one of the letters to mean "Turn Left" or "Turn Right," then set the degrees to turn to be something other than 0. (If the app doesn't interpret any of the letters as a turn, then it will just draw a straight line.)<br/>
+                        <span class="entryHeader">Another Potential Solution:</span> Make sure the the "Iterations" textbox has a large enough number in it. In some Lindenmayer systems, the letters that mean "turn" don't show up in the instruction string until the system has gone through several iterations.<br/>
+                        <span class="entryHeader">Another Potential Solution:</span> Make sure at least one of the "becomes" textboxes contains multiple letters. To get an interesting image, the string of instructions needs to grow, and it won't do that if every letter is replaced by a single other letter. To check whether the string of instructions is growing, click the "View Instruction String" button (which appears after you click the "GO" button).</li>
+                    <li><span class="entryHeader">Problem:</span> It drew a big tangled mess.<br/> 
+                        <span class="entryHeader">Potential Solution:</span> Try different angles. I find that setting the turns to use 30, 60, and/or 120, or 45, 95, and/or 135, often works well.</li>
+                    <li><span class="entryHeader">Problem:</span> It drew a design (like a snowflake or a triangle or something), but it didn't draw a fractal.<br/> 
+                        <span class="entryHeader">Potential Solution:</span> Try changing all the turns to a new angle, or try setting some to one angle and others to a different angle.</li>
+                </ul>
+            </div>
+            <div class="faqQ">
+                If I find a new fractal, how can I share it with others?
+            </div>
+            <div class="faqA">
+                <p>
+                    Fractals found in the app's "Lindenmayer" are encoded in the page's URL (e.g., "https://chambergon.com/?seed=f&f=flg..."). Just copy the URL and send it to someone else.
+                </p>
+                <p>
+                    Unfortunately, I haven't had the energy to get the same sort of share-via-URL functionality going on the Prime Numbers side of things. However, I hope that any fractals you find over there will end up being describable in words (e.g., "Select 2, 4, and 7, then set each to animate from 89 to 90.").
+                </p>
+            </div>
+            <div class="faqQ">
+                How can I speed up/slow down the animation? 
+            </div>
+            <div class="faqA">
+                <p>
+                    If the animation is happening, but going too slow or too fast, move the mouse pointer over the <img src="images/canvas.png"class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas to reveal the control buttons, then click the buttons with musical notes on them. The button with one note will slow the animation down. The button with two notes will speed the animation up. You can hold the buttons down to make more dramatic speed changes.
+                </p>
+                <p>
+                    There are keyboard shortcuts to accomplish the same thing, but they can be a bit annoying. (See the Controls panel.)
+                </p>
+            </div>
+            <div class="faqQ">
+                The app froze. What do I do?
+            </div>
+            <div class="faqA">
+                <p>
+                    If you can still click on the textboxes and make changes, it may be that the animation just paused. To check, move your mouse over the <img src="images/canvas.png"class="inlineImgThick" alt="A black rectangle representing the canvas on which images on this site can be drawn and/or displayed"/> canvas to reveal the control buttons, and click the play button.
+                </p>
+                <p>
+                    If you can't even click on the textboxes anymore, it may be that the app can't handle the fractal you wanted to make. Try lowing the number of iterations (in the "Iterations" box). The more iterations you request, the longer the string of instructions that the app has to process becomes (usually). Having to process more instructions takes up more time and memory. 
+                </p>
+            </div>
+            <div class="faqQ">
+                Who found the built-in fractals (the ones in the drop-down menu in the Lindenmayer mode)? 
+            </div>
+            <div class="faqA">
+                <p>
+                    The ones in the "Classic Fractals" sub-menu were found by mathematicians. (Google a fractal's name to find more info.) I found and named most of the rest myself, though I doubt I found them first. (That is, I stumbled across most of the rest of them using a previous version of this app, but I think it unlikely that I'm the first to have done so. Others may have already found them and given them other names.)
+                </p>
+            </div>
+            <div class="faqQ">
+                What's the difference between "Lindenmayer" and "Prime Numbers" modes?
+            </div>
+            <div class="faqA">
+                <p>
+                    Both use a string of symbols (a sequence of letters or numbers), and both treat that string of symbols as a list of instructions for drawing a line. In the Lindenmayer mode, you get to construct that string of symbols yourself. In the Prime Numbers mode, the string of symbols is determined by the prime factorizations of the positive integers. However, even in the Prime Numbers mode, you get to choose which prime numbers to use and what angles to use.
+                </p>
+                <p>
+                    For more background info on the two modes, close this panel, then click the "Info" button.
+                </p>
+            </div>
+            <div class="faqQ">
+                What's the difference between "Animate Final Iteration" and "Show Iteration Sequence" options?
+            </div>
+            <div class="faqA">
+                <p>
+                    A Lindenmayer system is, first and foremost, a set of rules for transforming one string of symbols into another. For example, it might turn "x" into "xyx," then turn "xyx" into "xyxyyxyx," then turn "xyxyyxyx" into "xyxyyxyxyyyyxyxyyxyx," and so on. Each of these transformations is an "iteration."
+                </p>
+                <p>
+                    Each of those iterations produces a string of symbols that the app interprets as a series of instructions for drawing a line. The "Animate Final Iteration" vs. "Show Iteration Sequence" menu allows you to tell the app whether to show you only the line the app would draw when it follows the final set of instructions, or whether to show you the sequence of lines it would draw if it drew a new line for each iteration. 
+                </p>
+                <p>
+                    For example, if "x" means "step forward, drawing a line," and "y" means "turn right, 90 degrees," then "Show Iteration Sequence" would go like this:
+                </p>
+                <ol start="0">
+                    <li>"x"<span class="explanation">(the app would draw a horizontal line segment)</span></li>
+                    <li>"xyx"<span class="explanation">(the app would draw that same line segment, but then turn right 90 degrees [to face "down"] and draw a vertical line segment)</span></li> 
+                    <li>"xyxyyxyx"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="explanation">(the app would draw the same two line segments it drew last time [based on the "xyx" part of the string], but then would turn around to face up [based on the "yy" part of the string, which is two 90-degree turns], and then draw an upside-down "L" [based on the second "xyx" part of the string]; the result would look like a "T".)</span></li>
+                    <li>"xyxyyxyxyyyyxyxyyxyx" <span class="explanation">(the app would draw the same "T" as before [based on the "xyxyyxyx" part], then turn 360 degrees [based on the "yyyy" part], then draw another "T" [based on the second "xyxyyxyx"])</span></li>
+                </ol>
+                <p>
+                    However, if the app is set to "Animate Final Iteration," it will jump right to the "xyxyyxyxyyyyxyxyyxyx" version of the string. It will then follow that string's instruction for drawing a line, over and over again, gradually increasing the angle it turns each time.
+                </p>
+                <ol>
+                    <li> "xyxyyxyxyyyyxyxyyxyx";<span class="explanation">&nbsp;&nbsp;&nbsp;1st "frame" of animation: Angle = 0.0 degrees (the app would draw a horizontal line segment, turn right 0 degrees, draw another horizontal line segment, turn right 0 degrees, turn right 0 degrees, draw another horizontal line segment, etc. The result will look like a single, horizontal line)</span></li>
+                    <li> "xyxyyxyxyyyyxyxyyxyx";<span class="explanation">&nbsp;&nbsp;&nbsp;2nd "frame" of animation: Angle = 0.1 degrees (the app would draw a horizontal line segment, turn right 0.1 degrees, draw another almost-horizontal line segment, turn right 0.1 degrees, turn right 0.1 degrees, draw another line segment, etc. The result will look like a mostly-horizontal line that is curving ever-so-slightly downward.)</span></li>
+                    <li> "xyxyyxyxyyyyxyxyyxyx";<span class="explanation">&nbsp;&nbsp;&nbsp;3rd "frame" of animation: Angle = 0.2 degrees (the app would draw a horizontal line segment, turn right 0.2 degrees, draw another line segment, turn right 0.2 degrees, turn right 0.2 degrees, draw another line segment, etc. The result will still look mostly horizontal, but will curve slightly downward even more.)</span></li>
+                    <li> . . .</li>
+                    <li> "xyxyyxyxyyyyxyxyyxyx";<span class="explanation">899th "frame" of animation: Angle = 89.8 degrees (the app would draw a horizontal line segment, turn right 89.8 degrees, draw another line segment, turn right 89.8 degrees, turn right 89.8 degrees, draw another line segment, etc. The result will look almost like two Ts, but each "T" will look like it has been split down the middle ever so slightly -- as if its vertical line was a "V" that had almost closed)</span></li>
+                    <li> "xyxyyxyxyyyyxyxyyxyx";<span class="explanation">900th "frame" of animation: Angle = 89.9 degrees (the app would draw a horizontal line segment, turn right 89.9 degrees, draw another line segment, turn right 89.9 degrees, turn right 89.9 degrees, draw another line segment, etc. The result will look almost like two Ts, with the "split" down the middle of both Ts being almost completely closed.)</span></li>
+                    <li> "xyxyyxyxyyyyxyxyyxyx";<span class="explanation">901st "frame" of animation: Angle = 90.0 degrees (the app would draw a horizontal line segment, turn right 90.0 degrees, draw another line segment, turn right 90.0 degrees, turn right 90.0 degrees, draw another line segment, etc. The result will look like two Ts: "TT")</li>
+                </ol>
+            </div>
+            <div class="faqQ">
+                Why does the line move? I set it to use a specific angle, but it looks like it's using a whole range of angles.
+            </div>
+            <div class="faqA">
+                <p>
+                    Think of the angle you set as the "destination," and of the app as "folding" a straight line till it reaches the destination angle. (See the previous question for slightly more detail.)
+                </p>
+            </div>
+            <div class="faqQ">
+                Who <em>are</em> you?
+            </div>
+            <div class="faqA">
+                <p>
+                    No one of consequence.
+                </p>
+            </div>
+            <div class="faqQ">
+                I <em>must</em> know.
+            </div>
+            <div class="faqA">
+                <p>
+                    Okay, fine. I'm Micah Tillman. I majored in computer science but got my Ph.D. in philosophy. I'm a math fan, not a mathematician (which I guess makes this a math fansite).
+                </p>
+                <p>
+                    If you have comments or questions, you can email me. Just put my first and last names together. (I use Google's email platform [he said vaguely] in an attempt to avoid spam from bots.)
+                </p>
+            </div>
+            <div class="faqQ">
+                How did you make this site?
+            </div>
+            <div class="faqA">
+                <p>
+                    It's just HTML, CSS, and JavaScript, but I'm using the <a href="https://phaser.io/">Phaser framework/library</a> to handle the graphics and some of the user input.
+                </p>
+                <p>
+                    Feel free to poke around the code. I apologize for the fact that it almost entirely uncommented!
+                </p>
+            </div>
+            <div class="faqQ">
+                Can I use code from this site on my own site?
+            </div>
+            <div class="faqA">
+                <p>
+                    Please do! (And send me a link when you're done!)
+                </p>
+            </div>
+            <button id="closeFAQButton" class="closeButton">&#10005; CLOSE</button>
+        </div>  
+    </body>
+</html>

@@ -1,0 +1,564 @@
+body
+{
+    font-family: 'Consolas', 'Source Code Pro', 'Lucida Console', 'Courier New', Courier, monospace;
+    background-color: rgb(250, 250, 250);
+}
+
+#sidebar
+{
+    width: 33%;
+    float: left;
+    height: 100%;
+    padding: 1%;
+    overflow-x:hidden;
+    overflow-y:auto;
+    scrollbar-color: cadetblue rgb(169, 227, 229);
+}
+
+#phaser
+{
+    width: 61% !important;
+    float: right !important;
+    padding: 10px;
+    position: relative;
+}
+
+#controlButtons
+{
+    position: absolute;
+    display:block;
+    padding: 0px 0px 0px 0px !important;
+}
+
+#controlButtons button
+{
+    width: 50px;
+    height: 50px;
+    font-size: 32px;
+    color: cadetblue;
+    background-color: rgba(255,255,255,0.1);
+    border-color: cadetblue;
+    border-radius: 10px;
+}
+
+#controlButtons button:hover
+{
+    background-color: rgba(255,255,255,0.4);
+}
+
+canvas
+{
+    border: 2px solid grey;
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px 2px rgb(72, 125, 127);
+}
+
+.interpretationRule input[type="text"]
+{
+    width: 50px;
+}
+
+input[type=text]
+{
+    border: 2px dotted cadetblue;
+    background-color: rgb(250, 250, 250);
+    border-radius: 0px;
+    text-align: center;
+}
+
+input[type=radio], input[type=checkbox]
+{
+    accent-color:cadetblue;
+}
+
+select
+{
+    border: 1px solid rgb(124, 194, 187);
+    background-color:cadetblue;
+    box-shadow: 2px 2px 2px rgb(72, 125, 127);
+    border-radius: 0px;
+    color: whitesmoke;
+    font-family: 'Consolas', 'Source Code Pro', 'Lucida Console', 'Courier New', Courier, monospace;
+    scrollbar-color: rgb(169, 227, 229) cadetblue;
+}
+
+#iterations
+{
+    width:20px;
+}
+
+#seed, .replacementRule input[type=text]
+{
+    width:168px;
+}
+
+.symbol
+{
+    font-weight: bold;
+    color: rgb(63, 119, 121);
+}
+
+#seedDiv
+{
+    margin-bottom: 5px;
+    padding: 5px 0 5px 0;
+}
+
+#modeDiv
+{
+    margin-bottom: 5px;
+    padding: 5px 0 5px 0;
+}
+
+#iterationsDiv, #animateDIV
+{
+    margin-bottom: 5px;
+    padding: 5px 0 5px 0;
+    border-top: 1px dashed cadetblue;
+}
+
+#angleMeasureButtons
+{
+    /*display: table;*/
+    padding: 5px 0 5px 0;
+    /*border-top: 1px dashed cadetblue;*/
+}
+
+#replacementRules, #interpretationRules
+{
+    padding: 5px 0 5px 0;
+    border-top: 1px dashed cadetblue;
+}
+
+#output
+{
+    margin: 5px 0 5px 0;
+    border-top: 2px solid cadetblue;
+}
+
+#output div
+{
+    margin: 3px 0 5px 0;
+}
+
+.outputLabel
+{
+    color: rgb(63, 119, 121);
+    font-weight: bold;
+}
+
+#forceCenterZoom
+{
+    margin-bottom: 10px;
+}
+
+#buttonLineColor
+{
+    background: linear-gradient(-45deg,  hsl(0, 0%, 0%), hsl(0, 0%, 0%), hsl(0, 0%, 0%), hsl(0, 0%, 0%), hsl(0, 100%, 50%), hsl(30, 100%, 50%), hsl(60, 100%, 50%), hsl(120, 100%, 50%), hsl(210, 100%, 50%), hsl(280, 100%, 50%), hsl(0, 0%, 0%), hsl(0, 0%, 0%),  hsl(0, 0%, 0%), hsl(0, 0%, 0%));
+}
+
+#buttonLineColor:hover
+{
+    background: linear-gradient(-45deg, hsl(0, 0%, 20%), hsl(0, 0%, 20%), hsl(0, 0%, 20%), hsl(0, 0%, 20%), hsl(0, 50%, 50%), hsl(30, 50%, 50%), hsl(60, 50%, 50%), hsl(120, 50%, 50%), hsl(210, 50%, 50%), hsl(280, 50%, 50%), hsl(0, 0%, 20%), hsl(0, 0%, 20%), hsl(0, 0%, 20%), hsl(0, 0%, 20%));
+}
+
+#buttonLineWhite
+{
+    background: linear-gradient(-45deg, hsl(0, 0%, 0%), hsl(0, 0%, 0%), hsl(0, 100%, 100%), hsl(0, 0%, 0%), hsl(0, 0%, 0%));
+}
+
+#buttonLineWhite:hover
+{
+    background: linear-gradient(-45deg, hsl(0, 0%, 20%), hsl(0, 0%, 20%), hsl(0, 0%, 70%), hsl(0, 0%, 20%), hsl(0, 0%, 20%));
+}
+
+#buttonLineBlack
+{
+    background: linear-gradient(-45deg, hsl(0, 100%, 100%), hsl(0, 100%, 100%), hsl(0, 0%, 0%), hsl(0, 100%, 100%), hsl(0, 100%, 100%));
+}
+
+#buttonLineBlack:hover
+{
+    background: linear-gradient(-45deg, hsl(0, 0%, 70%), hsl(0, 0%, 70%), hsl(0, 0%, 20%), hsl(0, 0%, 70%), hsl(0, 0%, 70%));
+}
+
+.buttonColumn
+{
+    display:inline-block;
+    position: relative;
+    width: 50px;
+    height: 100px;
+}
+
+.primeStartBox, .primeEndBox
+{
+    width: 30px;
+}
+
+#primeAnimationStyle
+{
+    margin-bottom: 10px;
+}
+
+.hasToolTip .toolTip, .hasToolTip .toolTipAdjustPosition
+{
+    visibility: hidden;
+    width: 600px;
+    color: rgb(255, 255, 255);
+    text-shadow: 0px 1px rgb(52, 111, 171);
+    background-color: rgb(12, 94, 134);
+    z-index: 1;
+    border: 2px dashed rgb(95, 158, 160);
+    padding: 2px 5px 2px 15px;
+    text-indent: -10px;
+    box-shadow: 2px 2px 2px rgb(1, 20, 30);
+    font-size: larger;
+    position: absolute;
+    margin-left: 30px;
+}
+
+.hadToolTip .toolTip, .hadToolTip .toolTipAdjustPosition
+{
+    visibility: hidden;
+    display: none;
+}
+
+
+.hasToolTip .toolTipAdjustPosition
+{
+    margin-left: 300px;
+    margin-top: -20px;
+}
+
+.hasToolTip .toolTip p, .hasToolTip .toolTipAdjustPosition p
+{
+    margin: -5px, -5px, -5px, -5px !important;
+    padding: -5px, -5px, -5px, -5px !important;
+}
+
+.hasToolTip:hover .toolTip, .hasToolTip:hover .toolTipAdjustPosition
+{
+    visibility: visible;
+}
+
+.inlineImgThin
+{
+    transform: translate(0%, 10%);
+}
+
+.inlineImgThick
+{
+    transform: translate(0%, 30%);
+}
+
+.headerImage
+{
+    box-shadow: 2px 2px 2px rgb(35, 65, 66);
+    display: block;
+}
+
+#infoButton, #controlsButton, #faqButton, #toolTipsCheckboxSpan
+{
+    border-radius: 0px;
+    border: solid 2px cadetblue;
+    background-color: white;
+    transform:translate(0px,2px);
+    width: 60px;
+    height: 19px;
+    position: relative;
+    color: cadetblue;
+}
+
+#toolTipsCheckboxSpan
+{
+    width: 100px;
+    height: 16px;
+    display: inline-block;
+    transform:translate(0px,2px);
+    text-shadow: 0px 1px rgb(52, 111, 171);
+}
+
+#toolTipsCheckboxSpan input
+{
+    display:inline-block;
+    position:relative;
+    transform:translate(0px,0px);
+    margin: 0px;
+    padding: 0px;
+    height: 15px;
+}
+
+#toolTipsCheckboxSpan label
+{
+    display:inline-block;
+    position: relative;
+    margin-left: 5px;
+    transform:translate(5px,-2px);
+    margin: 0px;
+    padding: 0px;
+    font-size: 14px;
+}
+
+#infoButton:hover, #controlsButton:hover, #faqButton:hover, #toolTipsCheckboxSpan:hover
+{
+    background-color: cadetblue;
+    color: lightblue !important;
+}
+
+#infoButton:active, #controlsButton:active, #faqButton:hover, #toolTipsCheckboxSpan:active
+{
+    background-color: rgb(67, 112, 113);
+    border-bottom: solid 1px lightblue;
+    transform:translate(0px,3px);
+    color: white;
+}
+
+.buttonText
+{
+    display:inline-block;
+    transform: translate(0px,-1px);
+    text-shadow: 0px 1px rgb(52, 111, 171);
+}
+
+#lindenmayer, #primes
+{
+    border-top: 1px dashed cadetblue;
+    padding-top: 5px;
+}
+
+#controlsContainer, #infoContainer, #faqContainer, #instructionStringContainer
+{
+    padding: 10px;
+    color: white;
+    background-color: rgb(12, 94, 134);
+    border: 2px solid lightblue;
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px 0px rgb(72, 125, 127);
+    z-index: 1;
+    position: absolute;
+    height: 600px;
+    width: 1400px;
+    overflow-y:scroll;
+    overflow-x:scroll;
+}
+
+#controlsContainer ol li, #infoContainer ol li
+{
+    margin-left: 12px;
+}
+
+#infoContainer img
+{
+    box-shadow: 2px 2px 2px 0px rgb(37, 40, 116);
+}
+
+.controlsSection
+{
+    border-bottom: dashed 2px cadetblue;
+    line-height: 1.5;
+}
+
+#controlsHeader
+{
+    text-align: center;
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.controlsSubHeader
+{
+    text-align: left;
+    font-size: larger;
+    font-weight: 400;
+    margin-top: 10px;
+}
+
+.keyText
+{
+    border: solid 2px rgb(143, 222, 180);
+    border-radius: 5px;
+    color: rgb(212, 250, 204);
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.thinnerText
+{
+    font-weight: 0;
+}
+
+.thickerText
+{
+    font-weight: 900;
+}
+
+.entryHeader
+{
+    text-shadow: 0px -3px 4px black,
+                 0px 3px 4px black,
+                 -3px 0px 4px black,
+                 3px 0px 4px black;
+}
+
+.closeButton
+{
+    position: sticky; 
+    bottom: 90%;
+    left: 90%;
+    border-radius: 0px;
+    border: solid 2px cadetblue;
+    background-color: cadetblue;
+    width: 80px;
+    height: 25px;
+    color: white;
+    transform:translate(0px,0px);
+}
+
+.closeButton:hover
+{
+    background-color: rgb(73, 132, 134);
+    color: lightblue !important;
+}
+
+.closeButton:active
+{
+    color: black;
+    transform:translate(0px,3px);
+}
+
+.infoHeader
+{
+    margin-top: 10px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 900;
+    text-shadow: 2px 2px 2px black;
+}
+
+.infoSubHeader
+{
+    text-align: left;
+    font-size: larger;
+    font-weight: 400;
+    margin-top: 10px;
+    text-shadow: 2px 2px 2px black;
+}
+
+.infoSection
+{
+    border-bottom: solid 2px cadetblue;
+    line-height: 1.5;
+    padding: 10px 50px 10px 50px;
+}
+
+.infoSubSection
+{
+    border-bottom: dashed 1px cadetblue;
+    line-height: 1.5;
+    padding: 10px 50px 10px 50px;
+}
+
+.highlight
+{
+    border: solid 1px cadetblue;
+    padding: 2px;
+    margin-left: 1px;
+    margin-right: 1px;
+    color: rgb(175, 247, 175);
+}
+
+.old
+{
+    text-decoration: underline;
+    padding: 2px;
+    margin-left: 1px;
+    margin-right: 1px;
+    color: rgb(188, 195, 202);
+}
+
+#infoContainer a:link, #infoContainer a:visited
+{
+    color:rgb(175, 247, 175);
+}
+
+#infoContainer table
+{
+    border: solid 1px cadetblue;
+    border-spacing: 0px;
+    color: rgb(185, 183, 183);
+}
+
+#infoContainer td
+{
+    text-align: center;
+    border-right: solid 1px cadetblue;
+    border-bottom: solid 1px cadetblue;
+    width: 3em;
+}
+
+.columnHeader
+{
+    font-weight: 900;
+    text-shadow: 2px 2px 2px black;
+    border-top: solid 3px white !important;
+    background-color: cadetblue;
+    border-right: none;
+    color: white;
+}
+
+.rowHeader
+{
+    font-weight: 900;
+    text-shadow: 2px 2px 2px black;
+    background-color: cadetblue;
+    border-right: none;
+    color: white;
+}
+
+.spacingRow td
+{
+    transform: translate(0px,9px);
+    border-bottom: none !important;
+    border-right: none !important;
+    font-size: 10px;
+    font-weight: 400;
+    color: white;
+}
+
+.tableHighlight
+{
+    color: white;
+}
+
+.indent
+{
+    margin-left: 30px;
+}
+
+.strikeThrough, .strikeThrough td
+{
+    color: cadetblue !important;
+}
+
+.faqQ
+{
+    color: white;
+    font-weight: 900;
+    font-size: 25px;
+    text-shadow: 0px -3px 4px black,
+                 0px 3px 4px black,
+                 -3px 0px 4px black,
+                 3px 0px 4px black;
+}
+
+.faqA
+{
+    margin-left: 40px;
+    color: white;
+}
+
+.faqA li .explanation
+{
+    display: block;
+    margin-left: 13em;
+}
