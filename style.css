@@ -562,3 +562,16 @@ select
     display: block;
     margin-left: 13em;
 }
+
+#sequenceBox
+{
+    width: 495px;
+    height: 100px;
+    text-align: left;
+}
+
+#sequenceAngle .angleTextbox
+{
+    margin: 10px 0px 10px 0px;
+    width: 50px;
+}

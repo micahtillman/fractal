@@ -81,6 +81,8 @@ var forceCenterZoomBool = false; // Used to keep track of whether the user has c
 var forceCenterZoomBox; // The HTML checkbox for users to request that the camera center and zoom to make the fractal fully fit the screen on every frame
 var instructionStringTextbox; // The HTML textbox into which the user must type at least one letter to get the Lindenmayer Mode going.
 var buttonGo; // The button the user must press to start the animation in Lindenmayer mode
+var buttonProcess; // The button users will click to begin the animation in Prime Number Mode
+var buttonSequence; // The button users will click to begin the animation in Integer Sequence Mode
 var htmlReplacementRulesDIV; // The HTML div that contains the textboxes for the replacement rules
 var htmlInterpretationRulesDIV; // The HTML div that contains the menus and textboxes for the interpretation rules
 var currentAngleDIVs = []; // If animationStyle == 1 or 2, show how close to the goal angle we currently are
@@ -202,7 +204,7 @@ function update(time, delta)
                     || (incrementDirection < 0 && (currentProportion > 0)))
                 {
                     /* . . . then we can take the next step in the animation*/
-                    
+
                     /* If we are just starting the animation . . . */
                     if(currentProportion == 0 || currentProportion == 1)
                     {
@@ -692,6 +694,7 @@ function centerAndZoom(forceCenter, forceZoom)
 */
 function play()
 {
+    buttonSequence.blur();
     buttonProcess.blur();
     buttonGo.blur();
     document.getElementById("buttonPlay").blur();
@@ -2727,13 +2730,25 @@ function setupHTMLListeners()
     }
 
     /*  Get the button to start the animation in Prime Numbers Mode */
-    var buttonProcess = document.getElementById("buttonProcess");
+    buttonProcess = document.getElementById("buttonProcess");
 
     if(buttonProcess != null)
     {
         buttonProcess.addEventListener('click', () =>
         {
             prepareNumberLine();
+            play();
+        });
+    }
+
+    /*  Get the button to start the animation in Integer Sequence Mode */
+    buttonSequence = document.getElementById("buttonGoIntegers");
+
+    if(buttonSequence != null)
+    {
+        buttonSequence.addEventListener('click', () =>
+        {
+            prepareIntegerSequence();
             play();
         });
     }
@@ -2769,10 +2784,17 @@ function checkMode()
         case "lindenmayer":
             document.getElementById("lindenmayer").style.display = '';
             document.getElementById("primes").style.display = 'none';
+            document.getElementById("integers").style.display = 'none';
             break;
         case "prime":
             document.getElementById("lindenmayer").style.display = 'none';
             document.getElementById("primes").style.display = '';
+            document.getElementById("integers").style.display = 'none';
+            break;
+        case "integer":
+            document.getElementById("lindenmayer").style.display = 'none';
+            document.getElementById("primes").style.display = 'none';
+            document.getElementById("integers").style.display = '';
             break;
     }
 }
@@ -4577,6 +4599,90 @@ function prepareNumberLine()
             }
         }
     }
+}
+
+/**
+ *  In Integer Sequence Mode, read/process the sequence of integers entered by the user, then
+ *  prepare to animate. Uses the same "machinery" as animationStyle 2 in Prime Numbers Mode.
+ *  Called when the user clicks the "GO" button in Interger Sequence Mode. The function triggered
+ *  by that click will call play() next. 
+ */
+function prepareIntegerSequence()
+{
+    primeInstructions = []; // The version of the instruction string for Prime Numbers and Integer Sequence modes
+    animationStyle = 2;
+    currentProportion = 0;
+
+    var sequenceBox = document.getElementById("sequenceBox");
+
+    /* We need to pocess the text the user has entered into the <textarea> */
+
+    var sequenceString = sequenceBox.value;
+    /* Replace all tab characters with colons */
+    sequenceString = sequenceString.replace(/\t+/g,':');
+    
+    /* Replace all white space characters with commas */
+    sequenceString = sequenceString.replace(/\s+/g,',');
+    
+    /* Remove any entry labels of the form "###:" */
+    sequenceString = sequenceString.replace(/[0-9]+:/g,'');
+    
+    /* Replace all repeated commas with a single comma */
+    sequenceString = sequenceString.replace(/,+/g,',');
+    
+    /* Remove any leftover commas at beginning and end of string */
+    sequenceString = sequenceString.replace(/^,+|,+$/g,'');
+    
+    /* Split the string into separate entries and create an array from those entries*/
+    var temp_list = sequenceString.split(",")
+
+    /* We will use the primeInstructions array to hold the resulting list of numbers.
+        Since that array is meant to handle multiple arrays at once (one for each
+        prime number the user selects in Prime Numbers Mode), the app expects
+        to find each list of numbers for each prime as its own array within
+        primeInstructions. In Integer Sequence Mode, we will only have one such
+        list at a time, but we still need to insert it as its own array into 
+        the "larger" array of primeInstructions */
+    primeInstructions.push([]);
+
+    /* Each entry we have extracted from the <textarea> will be in the form of a string.
+       For the app to work (specifically, for drawFigure() to work), we need to convert 
+       each string into a number.  */
+    for(var i = 0; i < temp_list.length; i++)
+    {
+        /* Try to turn the current entry from a string into a number. Then check whether the
+           attempt failed by producing something that is not a number ("isNaN") */
+        if(isNaN(Number(temp_list[i])))
+        {
+            primeInstructions[0].push(0); // We'll use a 0 in place of whatever non-number we found
+        }
+        else
+        {
+            /* If trying to turn the entry from a string into a number succeded, we can insert
+               the result into our array of instructions */
+            primeInstructions[0].push(Number(temp_list[i]));
+        }
+    }
+
+    /* Next, we need to find out how much the user wants the line to turn at each "bend." */
+    primeAngles = [];
+
+    var angleBox = document.getElementById("sequenceAngleBox");
+
+    /* If we found the text box into which the user was supposed to enter the angle and
+       what they entered is in fact a number */
+    if(angleBox != null && !isNaN(Number(angleBox.value)))
+    {
+        primeAngles.push(Number(angleBox.value)); // Store the angle for use in drawFigure()
+    }
+    else
+    {
+        primeAngles.push(0); // Use 0 as a fallback
+    }
+
+    /* Since we are using the "machinery" I created to handle things in the Prime Numbers
+       Mode, we need to say how long we want the line to be. */
+    numberLineSuggestedLength = primeInstructions[0].length;
 }
 
 /**

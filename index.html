@@ -22,9 +22,12 @@
                 <select id="mode">
                     <option value="lindenmayer">Lindenmayer Mode</option>
                     <option value="prime">Prime Numbers Mode</option>
+                    <option value="integer">Integer Sequence</option>
                 </select>
-                <span class="toolTip"><p>&#x2022;Select "Lindenmayer" to see fractals found by others (or to make your own).</p>
+                <span class="toolTip">
+                    <p>&#x2022;Select "Lindenmayer" to see fractals found by others (or to make your own).</p>
                     <p>&#x2022;Select "Prime Numbers" to explore how prime numbers turn the number line into intriguing shapes.</p>
+                    <p>&#x2022;Select "Integer Sequence" if you want to manually enter (or copy/paste) a list of numbers to see what shapes they produce.</p>
                 </span>
             </div>
             <button id="controlsButton"><span class="buttonText">Controls</span></button>
@@ -212,6 +215,34 @@
                     <span class="toolTip">&#x2022;The number line extends to infinity, but computers can't draw a line that long. The app will try to choose a good number, but you can adjust it yourself. Longer lines will lead to slower animation.</span>
                 </div>
                 <button id="buttonProcess">GO</button>
+            </div>
+            <div id="integers" style="display: none">
+                <div id="sequenceDiv" class="hasToolTip">
+                    <label for="sequenceBox">Sequence:<br></label>
+                    <textarea id="sequenceBox"></textarea>
+                    <span class="toolTip">
+                        <p>
+                            &#x2022;Enter a series of numbers separated by spaces, commas, and/or line breaks. (Numbers containing commas will be interpreted as multiple numbers.)
+                        </p>
+                        <p>
+                            &#x2022;For interesting sequences, visit <a href="https://oeis.org/">OEIS</a>.
+                        </p>
+                        <p>
+                            &#x2022;If your sequence contains integer labels for any entries, those labels will be ignored. For example, "1: 5, 2: 10, 3: 15, 4: 20" would be treated as the sequence, "5, 10, 15, 20." Similarly, any number followed by a tab will be interpreted as an entry label, and will be ignored. 
+                        </p>
+                        
+                    </span>
+                </div>
+                <span id="sequenceAngle" class="hasToolTip">
+                    <input id="sequenceAngleBox" type="text" class="angleTextbox"><span class="pi"> degrees</span><span class="currentAngle"></span>
+                    <span class="toolTip">
+                        <p>
+                            &#x2022; For each number <em>n</em> in the sequence above, the line will move forward a step and then turn <em>n</em> times. How large should each of those <em>n</em> turns be?
+                        </p>
+                    </span>
+                </span>
+                <br>
+                <button id="buttonGoIntegers">GO</button> 
             </div>
         </div>
         <div id="phaser">
